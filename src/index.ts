@@ -1,8 +1,8 @@
 import http from 'http';
 import dotenv from 'dotenv';
-import { Router } from './modules/Router.js';
-import { DataBase } from './modules/DataBase.js';
-import { UserController } from './modules/UserController.js';
+import { Router } from './modules/Router';
+import { DataBase } from './modules/DataBase';
+import { UserController } from './modules/UserController';
 
 dotenv.config();
 
@@ -17,6 +17,6 @@ const server = http.createServer((req, res) => {
   router.handle(req, res);
 });
 
-server.listen(port, host, () => {
+server.listen(port, () => {
   console.log(`Server successfully running at http://${host}:${port}/`);
 });

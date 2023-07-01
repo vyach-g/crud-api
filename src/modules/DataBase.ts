@@ -1,13 +1,8 @@
 import crypto from 'crypto';
-
-// const userModel = {
-//   id: 'string', // generated on server
-//   username: 'string', // required
-//   age: 'number', //required
-//   hobbies: '[string, string]', //required
-// };
+import { User, UserDTO } from '../types/user';
 
 class DataBase {
+  list: User[];
   constructor() {
     this.list = [];
   }
@@ -16,12 +11,12 @@ class DataBase {
     return this.list;
   }
 
-  getUserById(userId) {
+  getUserById(userId: string) {
     const user = this.list.find((user) => user.id === userId);
     return user || null;
   }
 
-  addUser(data) {
+  addUser(data: UserDTO) {
     console.log(data);
     const record = {
       id: crypto.randomUUID(),
@@ -34,14 +29,14 @@ class DataBase {
     return record;
   }
 
-  updateUser(userId, data) {
+  updateUser(userId: string, data: UserDTO) {
     const record = this.getUserById(userId);
     Object.assign(record, { username: data.username, age: data.age, hobbies: data.hobbies });
     console.log('afterAssign');
     return record;
   }
 
-  deleteUser(userId) {
+  deleteUser(userId: string) {
     const record = this.getUserById(userId);
     this.list = this.list.filter((user) => user.id !== userId);
     return record;

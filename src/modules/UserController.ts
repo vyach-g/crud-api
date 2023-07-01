@@ -1,17 +1,21 @@
-import { Message } from '../consts/message.js';
-import { getReqData, isUUID, isUserDataValid } from '../utils/utils.js';
+import { Message } from '../consts/message';
+import { getReqData, isUUID, isUserDataValid } from '../utils/utils';
+import { DataBase } from './DataBase';
+import { ResponseDTO, httpRequest, httpResponse } from '../types/http';
 
 class UserController {
-  constructor(database) {
+  database: DataBase;
+
+  constructor(database: DataBase) {
     this.database = database;
   }
 
-  getAllUsers(req, res) {
+  getAllUsers(req: httpRequest, res: httpResponse) {
     const users = this.database.getAllUsers();
     this._sendResponse(res, users, 200);
   }
 
-  getUserById(req, res, userId) {
+  getUserById(req: httpRequest, res: httpResponse, userId: string) {
     try {
       if (!isUUID(userId)) {
         this._sendResponse(res, { message: Message.WrongId }, 400);
@@ -31,9 +35,10 @@ class UserController {
     }
   }
 
-  async addUser(req, res) {
+  async addUser(req: httpRequest, res: httpResponse) {
     try {
-      const data = JSON.parse(await getReqData(req));
+      const rawData = (await getReqData(req)) as string;
+      const data = JSON.parse(rawData);
 
       if (!isUserDataValid(data)) {
         this._sendResponse(res, { message: Message.UserValidationError }, 400);
@@ -48,7 +53,7 @@ class UserController {
     }
   }
 
-  async updateUser(req, res, userId) {
+  async updateUser(req: httpRequest, res: httpResponse, userId: string) {
     try {
       if (!isUUID(userId)) {
         this._sendResponse(res, { message: Message.WrongId }, 400);
@@ -61,7 +66,8 @@ class UserController {
         return;
       }
 
-      const data = JSON.parse(await getReqData(req));
+      const rawData = (await getReqData(req)) as string;
+      const data = JSON.parse(rawData);
       if (!isUserDataValid(data)) {
         this._sendResponse(res, { message: Message.UserValidationError }, 400);
         return;
@@ -75,7 +81,7 @@ class UserController {
     }
   }
 
-  async deleteUser(req, res, userId) {
+  async deleteUser(req: httpRequest, res: httpResponse, userId: string) {
     try {
       if (!isUUID(userId)) {
         this._sendResponse(res, { message: Message.WrongId }, 400);
@@ -96,7 +102,7 @@ class UserController {
     }
   }
 
-  _sendResponse(res, data, statusCode) {
+  _sendResponse(res: httpResponse, data: ResponseDTO, statusCode: number) {
     res.setHeader('Content-Type', 'application/json;');
     res.statusCode = statusCode;
     res.write(JSON.stringify(data));

@@ -1,12 +1,16 @@
-import { Message } from '../consts/message.js';
-import { getSplittedPath } from '../utils/utils.js';
+import { httpRequest, httpResponse } from '../types/http';
+import { Message } from '../consts/message';
+import { getSplittedPath } from '../utils/utils';
+import { UserController } from './UserController';
 
 class Router {
-  constructor(controller) {
+  controller: UserController;
+
+  constructor(controller: UserController) {
     this.controller = controller;
   }
 
-  handle(req, res) {
+  handle(req: httpRequest, res: httpResponse) {
     const path = getSplittedPath(req.url);
 
     const method = req.method;
@@ -52,21 +56,21 @@ class Router {
     this.throwNotFound(req, res);
   }
 
-  throwNoId(req, res) {
+  throwNoId(req: httpRequest, res: httpResponse) {
     res.setHeader('Content-Type', 'application/json;');
     res.statusCode = 400;
     res.write(JSON.stringify({ message: Message.IdNotSpecified }));
     res.end();
   }
 
-  throwUnsupported(req, res) {
+  throwUnsupported(req: httpRequest, res: httpResponse) {
     res.setHeader('Content-Type', 'application/json;');
     res.statusCode = 400;
     res.write(JSON.stringify({ message: Message.UnsupportedMethod }));
     res.end();
   }
 
-  throwNotFound(req, res) {
+  throwNotFound(req: httpRequest, res: httpResponse) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8;');
     res.statusCode = 404;
     res.write(JSON.stringify({ message: Message.RouteNotFound }));
