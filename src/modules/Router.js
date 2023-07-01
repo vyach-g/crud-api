@@ -1,3 +1,4 @@
+import { Message } from '../consts/message.js';
 import { getSplittedPath } from '../utils/utils.js';
 
 class Router {
@@ -15,34 +16,60 @@ class Router {
       switch (method) {
         case 'GET':
           if (path[2]) {
-            this.controller.getUserById(req, res);
+            this.controller.getUserById(req, res, path[2]);
           } else {
             this.controller.getAllUsers(req, res);
           }
           break;
+
         case 'POST':
           this.controller.addUser(req, res);
           break;
+
         case 'PUT':
-          this.controller.editUser(req, res);
+          if (path[2]) {
+            this.controller.updateUser(req, res, path[2]);
+          } else {
+            this.throwNoId(req, res);
+          }
           break;
-        case 'DELTE':
-          this.controller.deleteUser(req, res);
+
+        case 'DELETE':
+          if (path[2]) {
+            this.controller.deleteUser(req, res, path[2]);
+          } else {
+            this.throwNoId(req, res);
+          }
+          break;
+
+        default:
+          this.throwUnsupported(req, res);
           break;
       }
 
       return;
     }
     this.throwNotFound(req, res);
-    // switch(req.url) {
-    //   case
-    // }
+  }
+
+  throwNoId(req, res) {
+    res.setHeader('Content-Type', 'application/json;');
+    res.statusCode = 400;
+    res.write(JSON.stringify({ message: Message.IdNotSpecified }));
+    res.end();
+  }
+
+  throwUnsupported(req, res) {
+    res.setHeader('Content-Type', 'application/json;');
+    res.statusCode = 400;
+    res.write(JSON.stringify({ message: Message.UnsupportedMethod }));
+    res.end();
   }
 
   throwNotFound(req, res) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8;');
     res.statusCode = 404;
-    res.write('<h1>Page Not Found</h1>');
+    res.write(JSON.stringify({ message: Message.RouteNotFound }));
     res.end();
   }
 }
