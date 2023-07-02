@@ -1,28 +1,28 @@
 import { Message } from '../consts/message';
 import { getReqData, isUUID, isUserDataValid } from '../utils/utils';
-import { DataBase } from './DataBase';
+import { DataBaseORM } from './DataBaseORM';
 import { ResponseDTO, httpRequest, httpResponse } from '../types/http';
 
 class UserController {
-  database: DataBase;
+  orm: DataBaseORM;
 
-  constructor(database: DataBase) {
-    this.database = database;
+  constructor(orm: DataBaseORM) {
+    this.orm = orm;
   }
 
-  getAllUsers(req: httpRequest, res: httpResponse) {
-    const users = this.database.getAllUsers();
+  async getAllUsers(req: httpRequest, res: httpResponse) {
+    const users = await this.orm.getAllUsers();
     this._sendResponse(res, users, 200);
   }
 
-  getUserById(req: httpRequest, res: httpResponse, userId: string) {
+  async getUserById(req: httpRequest, res: httpResponse, userId: string) {
     try {
       if (!isUUID(userId)) {
         this._sendResponse(res, { message: Message.WrongId }, 400);
         return;
       }
 
-      const user = this.database.getUserById(userId);
+      const user = await this.orm.getUserById({ userId });
       if (!user) {
         this._sendResponse(res, { message: Message.UserNotFound }, 404);
         return;
@@ -45,7 +45,7 @@ class UserController {
         return;
       }
 
-      const newUser = this.database.addUser(data);
+      const newUser = await this.orm.addUser({ data });
       this._sendResponse(res, { message: Message.AddedSuccessfully, data: newUser }, 201);
     } catch (e) {
       console.log(e);
@@ -60,7 +60,7 @@ class UserController {
         return;
       }
 
-      const user = this.database.getUserById(userId);
+      const user = await this.orm.getUserById({ userId });
       if (!user) {
         this._sendResponse(res, { message: Message.UserNotFound }, 404);
         return;
@@ -73,7 +73,7 @@ class UserController {
         return;
       }
 
-      const updatedUser = this.database.updateUser(userId, data);
+      const updatedUser = await this.orm.updateUser({ userId, data });
       this._sendResponse(res, { message: Message.UpdatedSuccessfully, data: updatedUser }, 200);
     } catch (e) {
       console.log(e);
@@ -88,13 +88,13 @@ class UserController {
         return;
       }
 
-      const user = this.database.getUserById(userId);
+      const user = await this.orm.getUserById({ userId });
       if (!user) {
         this._sendResponse(res, { message: Message.UserNotFound }, 404);
         return;
       }
 
-      const deleted = this.database.deleteUser(userId);
+      const deleted = await this.orm.deleteUser({ userId });
       this._sendResponse(res, { message: Message.DeletedSuccessfully, data: deleted }, 204);
     } catch (e) {
       console.log(e);

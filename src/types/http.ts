@@ -10,7 +10,7 @@ export type httpResponse = http.ServerResponse<http.IncomingMessage> & {
 export type ResponseDTO =
   | {
       message?: Message | string;
-      data?: User | User[];
+      data?: User | User[] | null;
     }
   | User
   | User[];

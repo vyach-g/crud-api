@@ -11,10 +11,10 @@ class Router {
   }
 
   handle(req: httpRequest, res: httpResponse) {
-    const path = getSplittedPath(req.url);
+    const path = getSplittedPath(req.url!);
 
     const method = req.method;
-    console.log(path);
+    console.log(`New request: ${method} ${req.url}`);
 
     if (path[0] === 'api' && path[1] === 'users') {
       switch (method) {
