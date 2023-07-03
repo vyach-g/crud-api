@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "lib": ["ES2022"],
-    "module": "ES2022",
+    "module": "esnext",
     "moduleResolution": "Node",
-    "target": "ES5",
+    "target": "es2017",
     "esModuleInterop": true,
     "outDir": "dist/",
     "strict": true,

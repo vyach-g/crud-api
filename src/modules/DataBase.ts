@@ -3,42 +3,51 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const host = process.env.HOST || 'localhost';
-const dbPort = process.env.DB_PORT || 5000;
-
 import crypto from 'crypto';
 import { User, UserDTO } from '../types/user';
 import { getReqData } from '../utils/utils';
 
 class DataBase {
   list: User[];
-  constructor() {
+  server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse> | undefined;
+  port: number;
+  host: string;
+  constructor(host: string, port: number) {
     this.list = [];
+    this.host = host;
+    this.port = port;
+  }
 
-    const server = http.createServer(async (req, res) => {
-      try {
-        if (req.method === 'POST') {
-          const rawDbAction = (await getReqData(req)) as string;
-          const { method, payload } = JSON.parse(rawDbAction) as DataBaseAction;
-          const result = this[method](payload);
-          res.write(JSON.stringify(result));
-          res.end();
-        } else {
+  start() {
+    return new Promise((resolve) => {
+      this.server = http.createServer(async (req, res) => {
+        try {
+          if (req.method === 'POST') {
+            const rawDbAction = (await getReqData(req)) as string;
+            const { method, payload } = JSON.parse(rawDbAction) as DataBaseAction;
+            const result = this[method](payload);
+            res.write(JSON.stringify(result));
+            res.end();
+          } else {
+            usedDirectly();
+          }
+        } catch (e) {
           usedDirectly();
         }
-      } catch (e) {
-        usedDirectly();
-      }
 
-      function usedDirectly() {
-        res.write(JSON.stringify({ message: "Don't use DB directly" }));
-        res.end();
-        console.log("!!! Don't use DB directly !!!");
-      }
-    });
+        function usedDirectly() {
+          res.write(JSON.stringify({ message: "Don't use DB directly" }));
+          res.end();
+          console.log("!!! Don't use DB directly !!!");
+        }
+      });
 
-    server.listen(dbPort, () => {
-      console.log(`DB successfully running at http://${host}:${dbPort}/ (You shouldn't use it)`);
+      this.server.listen(this.port, () => {
+        console.log(
+          `DB successfully running at http://${this.host}:${this.port}/ (You shouldn't use it)`,
+        );
+        resolve(null);
+      });
     });
   }
 
@@ -77,6 +86,10 @@ class DataBase {
     const record = this.getUserById({ userId });
     this.list = this.list.filter((user) => user.id !== userId);
     return record;
+  }
+
+  close() {
+    this.server?.close();
   }
 }
 

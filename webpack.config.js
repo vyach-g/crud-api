@@ -4,7 +4,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 const config = {
-  entry: './src/index.ts',
+  entry: './src/single.ts',
   target: 'node',
   module: {
     rules: [
@@ -20,7 +20,7 @@ const config = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'index.cjs',
+    filename: 'single.cjs',
     path: path.resolve(__dirname, 'dist'),
   },
   optimization: {
