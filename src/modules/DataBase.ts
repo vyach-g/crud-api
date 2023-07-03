@@ -16,11 +16,25 @@ class DataBase {
     this.list = [];
 
     const server = http.createServer(async (req, res) => {
-      const rawDbAction = (await getReqData(req)) as string;
-      const { method, payload } = JSON.parse(rawDbAction) as DataBaseAction;
-      const result = this[method](payload);
-      res.write(JSON.stringify(result));
-      res.end();
+      try {
+        if (req.method === 'POST') {
+          const rawDbAction = (await getReqData(req)) as string;
+          const { method, payload } = JSON.parse(rawDbAction) as DataBaseAction;
+          const result = this[method](payload);
+          res.write(JSON.stringify(result));
+          res.end();
+        } else {
+          usedDirectly();
+        }
+      } catch (e) {
+        usedDirectly();
+      }
+
+      function usedDirectly() {
+        res.write(JSON.stringify({ message: "Don't use DB directly" }));
+        res.end();
+        console.log("!!! Don't use DB directly !!!");
+      }
     });
 
     server.listen(dbPort, () => {

@@ -35,7 +35,6 @@ class DataBaseORM {
         res.setEncoding('utf8');
         res.on('data', (chunk) => {
           data += chunk;
-          // console.log(`BODY: ${chunk}`);
         });
         res.on('end', () => {
           resolve(JSON.parse(data));
