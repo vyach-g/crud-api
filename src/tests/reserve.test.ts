@@ -1,14 +1,14 @@
+import { startServer, closeServer } from '../multi-base';
 import { User } from '../types/user';
 import { TestRequest } from './TestRequest';
 import { user1, user2, userBroken } from './mocks';
-import { exec } from 'child_process';
+
+afterAll(() => {
+  closeServer();
+});
 
 beforeAll((done) => {
-  exec('npx ts-node ./src/multi.ts');
-  // wait until server is loaded. if fails, increase setTimeout time
-  setTimeout(() => {
-    done();
-  }, 10000);
+  startServer()?.then(() => done());
 }, 60000);
 
 describe('single server, every endpoint', () => {

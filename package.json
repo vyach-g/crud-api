@@ -8,8 +8,9 @@
     "start:dev": "nodemon src/single.ts ",
     "start:prod": "webpack --mode=production && node dist/index.cjs",
     "start:multi": "nodemon src/multi.ts",
-    "start": "ts-node src/index.ts",
-    "test": "jest --silent"
+    "start": "ts-node src/single.ts",
+    "test": "jest src/tests/index.test.ts",
+    "test:reserve": "jest src/tests/reserve.test.ts"
   },
   "author": "",
   "license": "ISC",

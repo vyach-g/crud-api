@@ -20,7 +20,7 @@ const config = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'single.cjs',
+    filename: 'index.cjs',
     path: path.resolve(__dirname, 'dist'),
   },
   optimization: {
